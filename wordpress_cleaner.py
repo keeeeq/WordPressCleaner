@@ -28,9 +28,6 @@ NAMESPACES = {
     'dc': 'http://purl.org/dc/elements/1.1/',
 }
 
-# 博主邮箱（用于过滤评论，请修改为你自己的邮箱）
-AUTHOR_EMAIL = 'your_email@example.com'
-
 
 def html_to_markdown(html_content: str) -> str:
     """将 HTML 内容转换为 Markdown"""
@@ -147,16 +144,32 @@ def parse_post(item) -> dict:
     return post
 
 
-# 主要分类（用于合并）
-MAIN_CATEGORIES = ['学习历程', '生活流水账', '所思所感', '未分类']
+# =============================================================================
+# 配置区域（可根据需要修改）
+# =============================================================================
+
+# 博主邮箱（用于过滤评论，只保留自己的评论）
+AUTHOR_EMAIL = 'your_email@example.com'
+
+# 是否合并分类（设为 True 会把小分类合并到主分类，设为 False 保留原始分类）
+MERGE_CATEGORIES = False
+
+# 主要分类（仅当 MERGE_CATEGORIES = True 时生效）
+# 不在此列表中的分类会被归入"其他"
+MAIN_CATEGORIES = ['未分类']
+
+# =============================================================================
 
 
 def get_main_category(categories: list) -> str:
     """获取主分类，如果没有主分类则归入其他"""
+    if not MERGE_CATEGORIES:
+        # 不合并模式：返回第一个分类
+        return categories[0] if categories else '未分类'
+    
     for cat in categories:
         if cat in MAIN_CATEGORIES:
             return cat
-    # 如果没有主分类，归入"其他"
     return '其他' if categories else '未分类'
 
 
